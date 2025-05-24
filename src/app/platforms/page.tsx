@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import PlatformCard from '@/components/PlatformCard';
+import BackupProcess from '@/components/BackupProcess';
 import { SocialPlatform } from '@/types';
 
 const initialPlatforms: SocialPlatform[] = [
@@ -45,6 +46,7 @@ const initialPlatforms: SocialPlatform[] = [
 
 export default function PlatformsPage() {
   const [platforms, setPlatforms] = useState<SocialPlatform[]>(initialPlatforms);
+  const [backupPlatform, setBackupPlatform] = useState<string | null>(null);
 
   const handleConnect = (platformId: string) => {
     console.log('Connecting to platform:', platformId);
@@ -62,6 +64,23 @@ export default function PlatformsPage() {
       prev.map(platform =>
         platform.id === platformId
           ? { ...platform, connected: false, lastBackup: undefined }
+          : platform
+      )
+    );
+  };
+
+  const handleStartBackup = (platformId: string) => {
+    setBackupPlatform(platformId);
+  };
+
+  const handleBackupComplete = (hash: string) => {
+    console.log('Backup completed:', hash);
+    setBackupPlatform(null);
+    // Update platform last backup time
+    setPlatforms(prev =>
+      prev.map(platform =>
+        platform.id === backupPlatform
+          ? { ...platform, lastBackup: new Date() }
           : platform
       )
     );
@@ -91,6 +110,7 @@ export default function PlatformsPage() {
                   platform={platform}
                   onConnect={handleConnect}
                   onDisconnect={handleDisconnect}
+                  onBackup={handleStartBackup}
                 />
               ))}
             </div>
@@ -112,6 +132,14 @@ export default function PlatformsPage() {
             ))}
           </div>
         </div>
+
+        {backupPlatform && (
+          <BackupProcess
+            platform={backupPlatform}
+            onComplete={handleBackupComplete}
+            onCancel={() => setBackupPlatform(null)}
+          />
+        )}
       </div>
     </div>
   );

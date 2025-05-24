@@ -10,9 +10,10 @@ interface PlatformCardProps {
   };
   onConnect: (platformId: string) => void;
   onDisconnect: (platformId: string) => void;
+  onBackup?: (platformId: string) => void;
 }
 
-export default function PlatformCard({ platform, onConnect, onDisconnect }: PlatformCardProps) {
+export default function PlatformCard({ platform, onConnect, onDisconnect, onBackup }: PlatformCardProps) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
@@ -47,7 +48,10 @@ export default function PlatformCard({ platform, onConnect, onDisconnect }: Plat
             >
               Disconnect
             </button>
-            <button className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm">
+            <button
+              onClick={() => onBackup?.(platform.id)}
+              className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm"
+            >
               Backup Now
             </button>
           </>
